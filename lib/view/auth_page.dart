@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'home_page.dart';
+import 'dashboard_shell.dart';
 import 'login_page.dart';
 
 class AuthPage extends StatelessWidget {
@@ -11,7 +11,7 @@ class AuthPage extends StatelessWidget {
       body: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
-          if (snapshot.hasData) return const HomePage();
+          if (snapshot.hasData) return const DashboardShell();
           return const LoginPage();
         },
       ),
