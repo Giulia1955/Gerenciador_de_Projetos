@@ -38,6 +38,7 @@ void main() {
       MultiProvider(
         providers: [
           ChangeNotifierProvider<ProjectProvider>.value(value: projectProvider),
+          Provider<TaskRepository>.value(value: taskRepository),
           ChangeNotifierProvider<TaskProvider>.value(value: taskProvider),
           ChangeNotifierProvider<WisdomProvider>.value(value: wisdomProvider),
         ],
@@ -53,7 +54,13 @@ void main() {
 
     await tester.tap(find.text('Calendário').last);
     await tester.pump();
-    expect(find.byIcon(Icons.calendar_today), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(AppBar),
+        matching: find.text('Calendário'),
+      ),
+      findsOneWidget,
+    );
 
     projectProvider.dispose();
     taskProvider.dispose();

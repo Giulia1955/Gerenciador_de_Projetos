@@ -153,3 +153,17 @@
 - [ ] **Step 3:** Review commit log and diff between the pre-stabilization commit and HEAD.
 - [ ] **Step 4:** Confirm no secrets, build artifacts or unrelated files are included.
 - [ ] **Step 5:** Produce an evidence-based final summary of passed checks and remaining environment limitations.
+
+## Execution evidence (2026-11-23)
+
+- Baseline analyzer: 5 unused-import warnings in `lib/view/project_form_page.dart`.
+- Baseline tests: 37 passing and 1 failing dashboard widget test; the failure was a missing `TaskRepository` provider plus an outdated calendar-icon assertion.
+- Baseline debug APK: blocked because `JAVA_HOME` is unset and no `java` executable is in `PATH`.
+- Fixed dashboard test provider setup and calendar app-bar assertion.
+- Restored project image and GPS controls, capped at five URLs, with `imageQuality: 82`, the existing Storage repository path, and actionable error states.
+- Final analyzer: **No issues found**.
+- Final test suite: **38 tests passed**.
+- Firebase CLI: authenticated; Firestore rules compiled and deployed successfully to `apk-auth-8d602`.
+- Storage deployment: blocked because Firebase Storage is not initialized in `apk-auth-8d602`; the deployment reported the Console setup URL.
+- Android manual validation: not performed; `flutter devices` found Linux desktop and Chrome only, with no Android device or emulator.
+- Working-tree implementation changes are limited to `lib/view/project_form_page.dart` and `test/dashboard_shell_test.dart`; `assets/icon/tsp.pdf` remains an unrelated untracked file.

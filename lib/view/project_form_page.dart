@@ -27,7 +27,10 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
   late final TextEditingController _nameController;
   late final TextEditingController _descriptionController;
   DateTime? _dueDate;
+  ProjectLocation? _location;
+  late List<String> _imageUrls;
   bool _submitting = false;
+  bool _gettingLocation = false;
   String? _errorMessage;
 
   bool get _isEditing => widget.project != null;
@@ -39,6 +42,8 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
     _descriptionController =
         TextEditingController(text: widget.project?.description);
     _dueDate = widget.project?.dueDate;
+    _location = widget.project?.location;
+    _imageUrls = List<String>.from(widget.project?.imageUrls ?? const []);
   }
 
   @override
@@ -64,8 +69,8 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
       name: _nameController.text.trim(),
       description: _descriptionController.text.trim(),
       dueDate: _dueDate,
-      imageUrls: widget.project?.imageUrls ?? const [],
-      location: widget.project?.location,
+      imageUrls: List<String>.from(_imageUrls),
+      location: _location,
       createdAt: widget.project?.createdAt,
     );
 
@@ -88,6 +93,61 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
         setState(() => _submitting = false);
       }
     }
+  }
+
+  Future<void> _pickLocation() async {
+    setState(() => _gettingLocation = true);
+    try {
+      final location = await LocationRepository().currentLocation();
+      if (!mounted) return;
+      setState(() => _location = location);
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(error.toString().replaceFirst('Bad state: ', ''))),
+      );
+    } finally {
+      if (mounted) setState(() => _gettingLocation = false);
+    }
+  }
+
+  Future<void> _pickImage() async {
+    if (_imageUrls.length >= 5) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Limite de cinco imagens atingido')),
+      );
+      return;
+    }
+
+    final file = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 82,
+    );
+    if (file == null || !mounted) return;
+
+    final projectProvider = context.read<ProjectProvider>();
+    final uid = projectProvider.uid;
+    if (uid == null) return;
+
+    final mediaProvider = context.read<MediaProvider>();
+    final projectId = widget.project?.id ??
+        'project-${DateTime.now().microsecondsSinceEpoch}';
+    final url = await mediaProvider.upload(
+      uid: uid,
+      projectId: projectId,
+      file: File(file.path),
+    );
+    if (!mounted) return;
+    if (url == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+                mediaProvider.errorMessage ?? 'Falha no upload da imagem')),
+      );
+      return;
+    }
+    setState(() => _imageUrls = [..._imageUrls, url]);
   }
 
   @override
@@ -116,6 +176,80 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                   enabled: !_submitting,
                   onChanged: (value) => setState(() => _dueDate = value),
                 ),
+                const SizedBox(height: 16),
+                OutlinedButton.icon(
+                  onPressed:
+                      _submitting || _gettingLocation ? null : _pickLocation,
+                  icon: _gettingLocation
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2))
+                      : const Icon(Icons.my_location_outlined),
+                  label: Text(_location == null
+                      ? 'Adicionar localização GPS'
+                      : 'Atualizar localização GPS'),
+                ),
+                if (_location != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      'Localização: ${_location!.latitude.toStringAsFixed(5)}, ${_location!.longitude.toStringAsFixed(5)}',
+                    ),
+                  ),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: _submitting ? null : _pickImage,
+                  icon: const Icon(Icons.add_photo_alternate_outlined),
+                  label: Text('Adicionar imagens (${_imageUrls.length}/5)'),
+                ),
+                if (_imageUrls.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (var url in _imageUrls)
+                        Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.network(
+                                url,
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Positioned(
+                              right: -8,
+                              top: -8,
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _imageUrls.remove(url);
+                                  });
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding: const EdgeInsets.all(6),
+                                  child: const Icon(
+                                    Icons.close,
+                                    size: 16,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                    ],
+                  ),
+                ],
                 if (_errorMessage != null) ...[
                   const SizedBox(height: 16),
                   Container(
