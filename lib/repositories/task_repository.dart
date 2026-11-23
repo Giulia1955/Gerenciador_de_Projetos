@@ -21,13 +21,11 @@ class TaskRepository {
 
   Stream<List<ProjectTask>> watchTasks(String uid, String projectId) {
     return _tasks(uid, projectId).snapshots().map(
-          (snapshot) => snapshot.docs
-              .map((doc) {
-                final data = doc.data();
-                data['id'] = doc.id;
-                return ProjectTask.fromMap(data);
-              })
-              .toList(growable: false),
+          (snapshot) => snapshot.docs.map((doc) {
+            final data = doc.data();
+            data['id'] = doc.id;
+            return ProjectTask.fromMap(data);
+          }).toList(growable: false),
         );
   }
 
@@ -38,9 +36,7 @@ class TaskRepository {
   ) async {
     final now = DateTime.now().toUtc();
     await _tasks(uid, projectId).doc(task.id).set(
-          task
-              .copyWith(createdAt: now, updatedAt: now)
-              .toMap(),
+          task.copyWith(createdAt: now, updatedAt: now).toMap(),
         );
   }
 
@@ -70,11 +66,11 @@ class TaskRepository {
     bool completed,
   ) {
     return _tasks(uid, projectId).doc(taskId).set(
-          {
-            'completed': completed,
-            'updatedAt': Timestamp.fromDate(DateTime.now().toUtc()),
-          },
-          SetOptions(merge: true),
-        );
+      {
+        'completed': completed,
+        'updatedAt': Timestamp.fromDate(DateTime.now().toUtc()),
+      },
+      SetOptions(merge: true),
+    );
   }
 }

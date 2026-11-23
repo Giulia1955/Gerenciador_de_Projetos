@@ -5,10 +5,12 @@ class ProjectLocation {
     this.label,
   }) {
     if (!latitude.isFinite || latitude < -90 || latitude > 90) {
-      throw ArgumentError.value(latitude, 'latitude', 'must be between -90 and 90');
+      throw ArgumentError.value(
+          latitude, 'latitude', 'must be between -90 and 90');
     }
     if (!longitude.isFinite || longitude < -180 || longitude > 180) {
-      throw ArgumentError.value(longitude, 'longitude', 'must be between -180 and 180');
+      throw ArgumentError.value(
+          longitude, 'longitude', 'must be between -180 and 180');
     }
   }
 
@@ -39,7 +41,8 @@ class ProjectLocation {
         'label': label,
       };
 
-  ProjectLocation copyWith({double? latitude, double? longitude, String? label}) {
+  ProjectLocation copyWith(
+      {double? latitude, double? longitude, String? label}) {
     return ProjectLocation(
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,

@@ -19,14 +19,19 @@ void main() {
     });
 
     test('rejects invalid coordinates', () {
-      expect(() => ProjectLocation(latitude: -91, longitude: 0), throwsArgumentError);
-      expect(() => ProjectLocation(latitude: 0, longitude: 181), throwsArgumentError);
-      expect(() => ProjectLocation.fromMap({'latitude': 'north', 'longitude': 0}), throwsArgumentError);
+      expect(() => ProjectLocation(latitude: -91, longitude: 0),
+          throwsArgumentError);
+      expect(() => ProjectLocation(latitude: 0, longitude: 181),
+          throwsArgumentError);
+      expect(
+          () => ProjectLocation.fromMap({'latitude': 'north', 'longitude': 0}),
+          throwsArgumentError);
     });
   });
 
   group('Project', () {
-    test('fromMap and toMap round trip with nested location and timestamps', () {
+    test('fromMap and toMap round trip with nested location and timestamps',
+        () {
       final due = DateTime.utc(2026, 12, 1, 9);
       final updated = DateTime.utc(2026, 11, 20, 12);
       final created = DateTime.utc(2026, 11, 1, 8);
@@ -37,7 +42,11 @@ void main() {
         'description': 'Firebase project',
         'dueDate': Timestamp.fromDate(due),
         'imageUrls': ['https://example.com/a.png', 'https://example.com/b.png'],
-        'location': {'latitude': -23.5505, 'longitude': -46.6333, 'label': 'São Paulo'},
+        'location': {
+          'latitude': -23.5505,
+          'longitude': -46.6333,
+          'label': 'São Paulo'
+        },
         'updatedAt': Timestamp.fromDate(updated),
         'createdAt': Timestamp.fromDate(created),
       });
@@ -47,7 +56,8 @@ void main() {
       expect(project.name, 'Night Owl App');
       expect(project.description, 'Firebase project');
       expect(project.dueDate, due);
-      expect(project.imageUrls, ['https://example.com/a.png', 'https://example.com/b.png']);
+      expect(project.imageUrls,
+          ['https://example.com/a.png', 'https://example.com/b.png']);
       expect(project.location?.label, 'São Paulo');
       expect(project.updatedAt, updated);
       expect(project.createdAt, created);

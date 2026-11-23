@@ -7,7 +7,8 @@ DateTime? _dateTimeFromValue(Object? value) {
   if (value is num) {
     return DateTime.fromMillisecondsSinceEpoch(value.toInt(), isUtc: true);
   }
-  throw ArgumentError.value(value, 'date', 'must be Timestamp, DateTime, num, or null');
+  throw ArgumentError.value(
+      value, 'date', 'must be Timestamp, DateTime, num, or null');
 }
 
 Timestamp? _timestampFromDateTime(DateTime? value) {

@@ -13,13 +13,11 @@ class ProjectRepository {
 
   Stream<List<Project>> watchProjects(String uid) {
     return _projects(uid).snapshots().map(
-          (snapshot) => snapshot.docs
-              .map((doc) {
-                final data = doc.data();
-                data['id'] = doc.id;
-                return Project.fromMap(data);
-              })
-              .toList(growable: false),
+          (snapshot) => snapshot.docs.map((doc) {
+            final data = doc.data();
+            data['id'] = doc.id;
+            return Project.fromMap(data);
+          }).toList(growable: false),
         );
   }
 
@@ -47,5 +45,12 @@ class ProjectRepository {
 
   Future<void> deleteProject(String uid, String projectId) {
     return _projects(uid).doc(projectId).delete();
+  }
+
+  Future<void> touchProject(String uid, String projectId) {
+    return _projects(uid).doc(projectId).set(
+      {'updatedAt': Timestamp.fromDate(DateTime.now().toUtc())},
+      SetOptions(merge: true),
+    );
   }
 }

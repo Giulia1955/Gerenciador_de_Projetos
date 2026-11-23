@@ -15,7 +15,8 @@ void main() {
       repository = ProjectRepository(firestore);
     });
 
-    test('creates, lists, updates, and deletes projects under the explicit uid', () async {
+    test('creates, lists, updates, and deletes projects under the explicit uid',
+        () async {
       const project = Project(
         id: 'project-1',
         ownerId: 'uid-1',

@@ -1,44 +1,128 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:table_calendar/table_calendar.dart';
 
-import '../theme/app_theme.dart';
+import '../components/calendar_event_tile.dart';
+import '../models/project_task.dart';
+import '../providers/calendar_provider.dart';
+import '../providers/project_provider.dart';
+import '../repositories/task_repository.dart';
+import 'project_detail_page.dart';
 
-class CalendarPage extends StatelessWidget {
+class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
 
   @override
+  State<CalendarPage> createState() => _CalendarPageState();
+}
+
+class _CalendarPageState extends State<CalendarPage> {
+  DateTime _focusedDay = DateTime.now();
+  DateTime _selectedDay = DateTime.now();
+  final Map<String, List<ProjectTask>> _tasksByProject = {};
+  final List<StreamSubscription<List<ProjectTask>>> _subscriptions = [];
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _watchTasks();
+  }
+
+  void _watchTasks() {
+    final projectProvider = context.watch<ProjectProvider>();
+    final uid = projectProvider.uid;
+    if (uid == null) return;
+    final ids = projectProvider.projects.map((project) => project.id).toSet();
+    for (final subscription in _subscriptions) {
+      subscription.cancel();
+    }
+    _subscriptions.clear();
+    _tasksByProject.clear();
+    final taskRepository = context.read<TaskRepository>();
+    for (final project in projectProvider.projects) {
+      _subscriptions
+          .add(taskRepository.watchTasks(uid, project.id).listen((tasks) {
+        if (!mounted) return;
+        setState(() => _tasksByProject[project.id] = tasks);
+      }));
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final subscription in _subscriptions) {
+      subscription.cancel();
+    }
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final projects = context.watch<ProjectProvider>().projects;
+    final events = CalendarProvider.groupEvents(
+      projects: projects,
+      tasksByProject: _tasksByProject,
+    );
+    DateTime day(DateTime value) =>
+        DateTime(value.year, value.month, value.day);
+    final selectedEvents = events[day(_selectedDay)] ?? const <CalendarEvent>[];
+
     return Scaffold(
       appBar: AppBar(title: const Text('Calendário')),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 72,
-                height: 72,
-                decoration: const BoxDecoration(
-                  color: AppTheme.card,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.calendar_today_outlined,
-                    size: 34, color: AppTheme.accent),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Seu calendário está vazio',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Os prazos aparecerão aqui após a criação de projetos.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Color(0xFF94A3B8)),
-              ),
-            ],
+      body: ListView(
+        children: [
+          TableCalendar<CalendarEvent>(
+            firstDay: DateTime.utc(2020, 1, 1),
+            lastDay: DateTime.utc(2040, 12, 31),
+            focusedDay: _focusedDay,
+            selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
+            eventLoader: (day) => events[day(day)] ?? const <CalendarEvent>[],
+            onDaySelected: (selected, focused) {
+              setState(() {
+                _selectedDay = day(selected);
+                _focusedDay = focused;
+              });
+            },
+            calendarStyle: const CalendarStyle(markersMaxCount: 3),
           ),
-        ),
+          const Divider(height: 1),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              'Eventos de ${_selectedDay.day}/${_selectedDay.month}/${_selectedDay.year}',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+            ),
+          ),
+          if (selectedEvents.isEmpty)
+            const Padding(
+              padding: EdgeInsets.all(24),
+              child:
+                  Text('Nenhum prazo nesta data.', textAlign: TextAlign.center),
+            )
+          else
+            ...selectedEvents.map((event) {
+              final project = event.project ??
+                  projects
+                      .where((item) => item.id == event.projectId)
+                      .firstOrNull;
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: CalendarEventTile(
+                  event: event,
+                  onTap: project == null
+                      ? () {}
+                      : () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) =>
+                                  ProjectDetailPage(project: project),
+                            ),
+                          ),
+                ),
+              );
+            }),
+        ],
       ),
     );
   }
