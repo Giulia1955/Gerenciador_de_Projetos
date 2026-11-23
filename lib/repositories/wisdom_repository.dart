@@ -35,7 +35,9 @@ class WisdomRepository {
   Future<WisdomQuote> _fetchZen() async {
     final response =
         await _client.get(Uri.parse('https://zenquotes.io/api/random'));
-    if (response.statusCode != 200) throw StateError('ZenQuotes indisponível');
+    if (response.statusCode != 200) {
+      throw StateError('ZenQuotes indisponível');
+    }
     final list = jsonDecode(response.body) as List<dynamic>;
     final item = list.first as Map<String, dynamic>;
     return WisdomQuote(
@@ -46,8 +48,9 @@ class WisdomRepository {
   Future<WisdomQuote> _fetchAdvice() async {
     final response =
         await _client.get(Uri.parse('https://api.adviceslip.com/advice'));
-    if (response.statusCode != 200)
+    if (response.statusCode != 200) {
       throw StateError('Advice Slip indisponível');
+    }
     final map = jsonDecode(response.body) as Map<String, dynamic>;
     final slip = map['slip'] as Map<String, dynamic>;
     return WisdomQuote(text: slip['advice'] as String, author: 'Advice Slip');

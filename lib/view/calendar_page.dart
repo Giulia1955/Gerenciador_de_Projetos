@@ -34,7 +34,6 @@ class _CalendarPageState extends State<CalendarPage> {
     final projectProvider = context.watch<ProjectProvider>();
     final uid = projectProvider.uid;
     if (uid == null) return;
-    final ids = projectProvider.projects.map((project) => project.id).toSet();
     for (final subscription in _subscriptions) {
       subscription.cancel();
     }

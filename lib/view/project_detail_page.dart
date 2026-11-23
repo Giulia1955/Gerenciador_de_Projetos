@@ -22,7 +22,9 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final uid = context.read<ProjectProvider>().uid;
-    if (uid != null) context.read<TaskProvider>().load(uid, widget.project.id);
+    if (uid != null) {
+      context.read<TaskProvider>().load(uid, widget.project.id);
+    }
   }
 
   Future<void> _deleteTask(ProjectTask task) async {
@@ -39,8 +41,9 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
                       onPressed: () => Navigator.pop(context, true),
                       child: const Text('Excluir'))
                 ]));
-    if (confirmed == true && mounted)
+    if (confirmed == true && mounted) {
       await context.read<TaskProvider>().delete(task.id);
+    }
   }
 
   @override
@@ -68,9 +71,10 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
         Text(project.dueDate == null
             ? 'Sem prazo'
             : 'Prazo: ${project.dueDate!.day}/${project.dueDate!.month}/${project.dueDate!.year}'),
-        if (project.location != null)
+        if (project.location != null) ...[
           Text(
               'Localização: ${project.location!.latitude.toStringAsFixed(5)}, ${project.location!.longitude.toStringAsFixed(5)}'),
+        ],
         if (project.imageUrls.isNotEmpty) ...[
           const SizedBox(height: 16),
           SizedBox(
@@ -91,13 +95,15 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
         const SizedBox(height: 8),
         Consumer<TaskProvider>(builder: (_, taskProvider, __) {
-          if (taskProvider.isLoading)
+          if (taskProvider.isLoading) {
             return const Center(child: CircularProgressIndicator());
-          if (taskProvider.tasks.isEmpty)
+          }
+          if (taskProvider.tasks.isEmpty) {
             return const Card(
                 child: ListTile(
                     leading: Icon(Icons.task_alt_outlined),
                     title: Text('Nenhuma tarefa ainda')));
+          }
           return Column(
               children: taskProvider.tasks
                   .map((task) => TaskTile(

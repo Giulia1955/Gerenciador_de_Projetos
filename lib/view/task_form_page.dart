@@ -62,11 +62,14 @@ class _TaskFormPageState extends State<TaskFormPage> {
       createdAt: widget.task?.createdAt,
     );
     final provider = context.read<TaskProvider>();
-    if (widget.task == null)
+    if (widget.task == null) {
       await provider.create(task);
-    else
+    } else {
       await provider.update(task);
-    if (mounted) Navigator.of(context).pop();
+    }
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -98,11 +101,13 @@ class _TaskFormPageState extends State<TaskFormPage> {
           FormField<DateTime>(
               initialValue: _dueDate,
               validator: (value) {
-                if (value == null)
+                if (value == null) {
                   return 'A data limite da tarefa é obrigatória';
-                if (widget.project.dueDate != null)
+                }
+                if (widget.project.dueDate != null) {
                   return Validators.validateTaskDueDate(
                       value, widget.project.dueDate!);
+                }
                 return null;
               },
               builder: (field) => InkWell(
@@ -114,11 +119,12 @@ class _TaskFormPageState extends State<TaskFormPage> {
                         firstDate: now,
                         lastDate:
                             widget.project.dueDate ?? DateTime(now.year + 20));
-                    if (value != null)
+                    if (value != null) {
                       setState(() {
                         _dueDate = value;
                         field.didChange(value);
                       });
+                    }
                   },
                   child: InputDecorator(
                       decoration: InputDecoration(
