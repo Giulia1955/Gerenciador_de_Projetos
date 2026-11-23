@@ -65,9 +65,13 @@ class _CalendarPageState extends State<CalendarPage> {
       projects: projects,
       tasksByProject: _tasksByProject,
     );
-    DateTime day(DateTime value) =>
-        DateTime(value.year, value.month, value.day);
-    final selectedEvents = events[day(_selectedDay)] ?? const <CalendarEvent>[];
+    DateTime normalizeDay(DateTime value) {
+      return DateTime(value.year, value.month, value.day);
+    }
+
+    final normalizedSelected = normalizeDay(_selectedDay);
+    final selectedEvents =
+        events[normalizedSelected] ?? const <CalendarEvent>[];
 
     return Scaffold(
       appBar: AppBar(title: const Text('Calendário')),
@@ -78,10 +82,13 @@ class _CalendarPageState extends State<CalendarPage> {
             lastDay: DateTime.utc(2040, 12, 31),
             focusedDay: _focusedDay,
             selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
-            eventLoader: (day) => events[day(day)] ?? const <CalendarEvent>[],
+            eventLoader: (day) {
+              final normalized = normalizeDay(day);
+              return events[normalized] ?? const <CalendarEvent>[];
+            },
             onDaySelected: (selected, focused) {
               setState(() {
-                _selectedDay = day(selected);
+                _selectedDay = normalizeDay(selected);
                 _focusedDay = focused;
               });
             },
