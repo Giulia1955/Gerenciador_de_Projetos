@@ -43,8 +43,14 @@ class ProjectRepository {
         );
   }
 
-  Future<void> deleteProject(String uid, String projectId) {
-    return _projects(uid).doc(projectId).delete();
+  Future<void> deleteProject(String uid, String projectId) async {
+    final tasks = await _projects(uid).doc(projectId).collection('tasks').get();
+    final batch = _firestore.batch();
+    for (final task in tasks.docs) {
+      batch.delete(task.reference);
+    }
+    batch.delete(_projects(uid).doc(projectId));
+    await batch.commit();
   }
 
   Future<void> touchProject(String uid, String projectId) {

@@ -1,15 +1,22 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../components/app_date_field.dart';
 import '../components/project_fields.dart';
 import '../models/project.dart';
+import '../models/project_location.dart';
+import '../providers/media_provider.dart';
 import '../providers/project_provider.dart';
+import '../repositories/location_repository.dart';
 
 class ProjectFormPage extends StatefulWidget {
-  const ProjectFormPage({super.key, this.project});
+  const ProjectFormPage({super.key, this.project, this.projectId});
 
   final Project? project;
+  final String? projectId;
 
   @override
   State<ProjectFormPage> createState() => _ProjectFormPageState();

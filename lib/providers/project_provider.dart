@@ -5,14 +5,17 @@ import 'package:flutter/foundation.dart';
 
 import '../models/project.dart';
 import '../repositories/project_repository.dart';
+import '../repositories/storage_repository.dart';
 
 enum ProjectProviderStatus { loading, success, empty, error }
 
 class ProjectProvider extends ChangeNotifier {
   ProjectProvider({
     required ProjectRepository repository,
+    StorageRepository? storageRepository,
     Stream<String?>? authStateChanges,
   })  : _repository = repository,
+        _storageRepository = storageRepository,
         _authStateChanges = authStateChanges ??
             FirebaseAuth.instance.authStateChanges().map(
                   (user) => user?.uid,
@@ -21,6 +24,7 @@ class ProjectProvider extends ChangeNotifier {
   }
 
   final ProjectRepository _repository;
+  final StorageRepository? _storageRepository;
   final Stream<String?> _authStateChanges;
 
   StreamSubscription<String?>? _authSubscription;
@@ -133,6 +137,7 @@ class ProjectProvider extends ChangeNotifier {
 
     try {
       await _repository.deleteProject(uid, projectId);
+      await _storageRepository?.deleteProjectFolder(uid, projectId);
     } catch (error) {
       _setError(error, uid: uid);
       rethrow;

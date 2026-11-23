@@ -10,8 +10,9 @@ import 'project_form_page.dart';
 import 'task_form_page.dart';
 
 class ProjectDetailPage extends StatefulWidget {
-  const ProjectDetailPage({super.key, required this.project});
+  const ProjectDetailPage({super.key, required this.project, this.initialTask});
   final Project project;
+  final ProjectTask? initialTask;
 
   @override
   State<ProjectDetailPage> createState() => _ProjectDetailPageState();
@@ -42,7 +43,14 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
                       child: const Text('Excluir'))
                 ]));
     if (confirmed == true && mounted) {
-      await context.read<TaskProvider>().delete(task.id);
+      try {
+        await context.read<TaskProvider>().delete(task.id);
+      } catch (_) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Não foi possível excluir a tarefa')),
+        );
+      }
     }
   }
 
@@ -78,19 +86,32 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
         if (project.imageUrls.isNotEmpty) ...[
           const SizedBox(height: 16),
           SizedBox(
-              height: 160,
-              child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: project.imageUrls
-                      .map((url) => Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.network(url,
-                                  width: 220, fit: BoxFit.cover))))
-                      .toList())),
+            height: 160,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: project.imageUrls
+                  .map((url) => Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            url,
+                            width: 220,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ))
+                  .toList(growable: false),
+            ),
+          ),
         ],
         const SizedBox(height: 20),
+        if (project.updatedAt != null) ...[
+          const SizedBox(height: 4),
+          Text(
+            'Atualizado em: ${project.updatedAt!.day}/${project.updatedAt!.month}/${project.updatedAt!.year}',
+          ),
+        ],
         const Text('Tarefas',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
         const SizedBox(height: 8),

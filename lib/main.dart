@@ -28,13 +28,14 @@ void main() async {
         Provider<ProjectRepository>(
           create: (_) => ProjectRepository(FirebaseFirestore.instance),
         ),
+        Provider<StorageRepository>(
+          create: (_) => StorageRepository(FirebaseStorage.instance),
+        ),
         ChangeNotifierProvider<ProjectProvider>(
           create: (context) => ProjectProvider(
             repository: context.read<ProjectRepository>(),
+            storageRepository: context.read<StorageRepository>(),
           ),
-        ),
-        Provider<StorageRepository>(
-          create: (_) => StorageRepository(FirebaseStorage.instance),
         ),
         ChangeNotifierProvider<MediaProvider>(
           create: (context) => MediaProvider(
