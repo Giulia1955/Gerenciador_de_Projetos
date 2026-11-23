@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -73,17 +72,13 @@ class _LoginPageState extends State<LoginPage> {
       if (!mounted) return;
 
       showAlert('Enviamos um link para seu email!');
-
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
 
       showAlert(switch (e.code) {
-        'invalid-email' =>
-          'O endereço de email informado é inválido.',
-        'user-not-found' =>
-          'Não encontramos uma conta com esse email.',
-        _ =>
-          'Não foi possível enviar o email de recuperação.',
+        'invalid-email' => 'O endereço de email informado é inválido.',
+        'user-not-found' => 'Não encontramos uma conta com esse email.',
+        _ => 'Não foi possível enviar o email de recuperação.',
       });
     }
   }
@@ -129,23 +124,17 @@ class _LoginPageState extends State<LoginPage> {
       if (!mounted) return;
 
       Navigator.pop(context); // Fecha o loading
-
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
 
       Navigator.pop(context); // Fecha o loading
 
       showAlert(switch (e.code) {
-        'invalid-credential' =>
-          'Email ou senha incorretos.',
-        'user-disabled' =>
-          'Esta conta foi desativada.',
-        'too-many-requests' =>
-          'Muitas tentativas. Tente novamente mais tarde.',
-        'invalid-email' =>
-          'O endereço de email informado é inválido.',
-        _ =>
-          'Não foi possível entrar. Tente novamente.',
+        'invalid-credential' => 'Email ou senha incorretos.',
+        'user-disabled' => 'Esta conta foi desativada.',
+        'too-many-requests' => 'Muitas tentativas. Tente novamente mais tarde.',
+        'invalid-email' => 'O endereço de email informado é inválido.',
+        _ => 'Não foi possível entrar. Tente novamente.',
       });
     } catch (e) {
       if (!mounted) return;
@@ -229,9 +218,7 @@ class _LoginPageState extends State<LoginPage> {
                         label: 'Google',
                         onTap: () {},
                       ),
-
                       const SizedBox(width: 12),
-
                       SocialButton(
                         icon: Icons.apple,
                         label: 'Apple',

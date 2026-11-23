@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../components/my_button.dart';
@@ -33,7 +32,6 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-
   bool isValidEmail(String email) {
     final emailRegex = RegExp(
       r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
@@ -44,7 +42,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future<void> register() async {
     final email = emailController.text.trim();
-
 
     if (email.isEmpty) {
       showAlert('Informe seu endereço de email.');
@@ -79,21 +76,16 @@ class _RegisterPageState extends State<RegisterPage> {
 
       Navigator.pop(context); // Fecha o loading
       Navigator.pop(context); // Fecha a RegisterPage
-
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
 
       Navigator.pop(context);
 
       showAlert(switch (e.code) {
-        'email-already-in-use' =>
-          'Já existe um usuário com esse email!',
-        'weak-password' =>
-          'Escolha uma senha mais forte.',
-        'invalid-email' =>
-          'O endereço de email informado é inválido.',
-        _ =>
-          'Não foi possível cadastrar. Tente novamente.',
+        'email-already-in-use' => 'Já existe um usuário com esse email!',
+        'weak-password' => 'Escolha uma senha mais forte.',
+        'invalid-email' => 'O endereço de email informado é inválido.',
+        _ => 'Não foi possível cadastrar. Tente novamente.',
       });
     }
   }
