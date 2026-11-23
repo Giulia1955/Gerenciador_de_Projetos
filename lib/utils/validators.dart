@@ -27,7 +27,10 @@ class Validators {
     if (dueDate == null) {
       return 'A data limite do projeto é obrigatória';
     }
-    if (dueDate.isBefore(DateTime.now())) {
+    final today = DateTime.now();
+    final dueDay = DateTime(dueDate.year, dueDate.month, dueDate.day);
+    final todayDay = DateTime(today.year, today.month, today.day);
+    if (dueDay.isBefore(todayDay)) {
       return 'A data limite do projeto não pode ser anterior a hoje';
     }
     return null;

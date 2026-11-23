@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
+import 'project_form_page.dart';
 
 class ProjectsPage extends StatelessWidget {
   const ProjectsPage({super.key});
@@ -9,7 +10,13 @@ class ProjectsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: null,
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const ProjectFormPage(),
+            ),
+          );
+        },
         icon: const Icon(Icons.add),
         label: const Text('Novo projeto'),
       ),
@@ -39,7 +46,8 @@ class ProjectsPage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               sliver: SliverToBoxAdapter(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
                     color: AppTheme.deepBlue,
                     borderRadius: BorderRadius.circular(22),
@@ -49,7 +57,8 @@ class ProjectsPage extends StatelessWidget {
                   ),
                   child: const Row(
                     children: [
-                      Icon(Icons.auto_awesome, color: AppTheme.accent, size: 18),
+                      Icon(Icons.auto_awesome,
+                          color: AppTheme.accent, size: 18),
                       SizedBox(width: 10),
                       Expanded(
                         child: Text(
@@ -71,7 +80,8 @@ class ProjectsPage extends StatelessWidget {
                   children: [
                     const Text(
                       'Meus projetos',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(height: 14),
                     Expanded(
@@ -168,11 +178,13 @@ class _AnimatedOwlState extends State<_AnimatedOwl>
                 borderRadius: BorderRadius.circular(18),
               ),
             ),
-            const Positioned(top: 14, child: Row(children: [
-              Icon(Icons.circle, size: 10, color: AppTheme.deepBlue),
-              SizedBox(width: 8),
-              Icon(Icons.circle, size: 10, color: AppTheme.deepBlue),
-            ])),
+            const Positioned(
+                top: 14,
+                child: Row(children: [
+                  Icon(Icons.circle, size: 10, color: AppTheme.deepBlue),
+                  SizedBox(width: 8),
+                  Icon(Icons.circle, size: 10, color: AppTheme.deepBlue),
+                ])),
             Positioned(
               bottom: 12,
               child: Container(
@@ -180,7 +192,8 @@ class _AnimatedOwlState extends State<_AnimatedOwl>
                 height: 5,
                 decoration: const BoxDecoration(
                   color: AppTheme.deepBlue,
-                  borderRadius: BorderRadius.vertical(bottom: Radius.circular(8)),
+                  borderRadius:
+                      BorderRadius.vertical(bottom: Radius.circular(8)),
                 ),
               ),
             ),
