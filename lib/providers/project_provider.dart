@@ -13,8 +13,8 @@ class ProjectProvider extends ChangeNotifier {
     required ProjectRepository repository,
     Stream<String?>? authStateChanges,
   })  : _repository = repository,
-        _authStateChanges =
-            authStateChanges ?? FirebaseAuth.instance.authStateChanges().map(
+        _authStateChanges = authStateChanges ??
+            FirebaseAuth.instance.authStateChanges().map(
                   (user) => user?.uid,
                 ) {
     initialize();
@@ -70,7 +70,7 @@ class ProjectProvider extends ChangeNotifier {
 
     _projectsSubscription = _repository.watchProjects(uid).listen(
       (projects) {
-        if (_disposed) return;
+        if (_disposed || uid != _uid) return;
         _projects = projects;
         _errorMessage = null;
         _status = projects.isEmpty
@@ -79,13 +79,13 @@ class ProjectProvider extends ChangeNotifier {
         notifyListeners();
       },
       onError: (Object error) {
-        _setError(error);
+        _setError(error, uid: uid);
       },
     );
   }
 
-  void _setError(Object error) {
-    if (_disposed) return;
+  void _setError(Object error, {String? uid}) {
+    if (_disposed || (uid != null && uid != _uid)) return;
     _errorMessage = error.toString();
     _status = ProjectProviderStatus.error;
     notifyListeners();
@@ -94,14 +94,15 @@ class ProjectProvider extends ChangeNotifier {
   Future<void> createProject(Project project) async {
     final uid = _uid;
     if (uid == null) {
-      _setError(StateError('Nenhum usuário autenticado'));
-      return;
+      final error = StateError('Nenhum usuário autenticado');
+      _setError(error);
+      throw error;
     }
 
     try {
       await _repository.createProject(uid, project);
     } catch (error) {
-      _setError(error);
+      _setError(error, uid: uid);
       rethrow;
     }
   }
@@ -109,14 +110,15 @@ class ProjectProvider extends ChangeNotifier {
   Future<void> updateProject(Project project) async {
     final uid = _uid;
     if (uid == null) {
-      _setError(StateError('Nenhum usuário autenticado'));
-      return;
+      final error = StateError('Nenhum usuário autenticado');
+      _setError(error);
+      throw error;
     }
 
     try {
       await _repository.updateProject(uid, project);
     } catch (error) {
-      _setError(error);
+      _setError(error, uid: uid);
       rethrow;
     }
   }
@@ -124,14 +126,15 @@ class ProjectProvider extends ChangeNotifier {
   Future<void> deleteProject(String projectId) async {
     final uid = _uid;
     if (uid == null) {
-      _setError(StateError('Nenhum usuário autenticado'));
-      return;
+      final error = StateError('Nenhum usuário autenticado');
+      _setError(error);
+      throw error;
     }
 
     try {
       await _repository.deleteProject(uid, projectId);
     } catch (error) {
-      _setError(error);
+      _setError(error, uid: uid);
       rethrow;
     }
   }

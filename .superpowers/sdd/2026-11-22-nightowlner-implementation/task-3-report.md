@@ -35,6 +35,37 @@ Os testes cobrem:
 - tratamento de erro da stream;
 - cancelamento das subscriptions no descarte.
 
+## Task 3.1 review fixes
+
+### TDD red evidence
+
+Before the implementation change, `flutter test test/providers/project_provider_test.dart` failed with:
+
+- Subscription callbacks for an old UID were not isolated from the current UID.
+- CRUD methods without an authenticated UID returned successfully instead of throwing.
+
+The added update test was also included in the regression suite.
+
+### Fix implementation
+
+- Project subscription data and error callbacks now capture the UID used when the subscription was created and ignore callbacks when that UID differs from `_uid`.
+- `createProject`, `updateProject`, and `deleteProject` set the provider error and throw `StateError` when `_uid` is null.
+- Operation errors for a captured UID are guarded against stale UID changes.
+
+### Final verification
+
+Executed:
+
+```text
+flutter test test/providers/project_provider_test.dart
+flutter analyze
+```
+
+Results:
+
+- 7 provider tests passed.
+- `flutter analyze`: `No issues found!`.
+
 ## Verification
 
 Executed:
