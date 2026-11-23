@@ -83,19 +83,19 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
           Text(
               'Localização: ${project.location!.latitude.toStringAsFixed(5)}, ${project.location!.longitude.toStringAsFixed(5)}'),
         ],
-        if (project.imageUrls.isNotEmpty) ...[
+        if (project.images.isNotEmpty) ...[
           const SizedBox(height: 16),
           SizedBox(
             height: 160,
             child: ListView(
               scrollDirection: Axis.horizontal,
-              children: project.imageUrls
-                  .map((url) => Padding(
+              children: project.images
+                  .map((blob) => Padding(
                         padding: const EdgeInsets.only(right: 8),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(12),
-                          child: Image.network(
-                            url,
+                          child: Image.memory(
+                            blob.bytes,
                             width: 220,
                             fit: BoxFit.cover,
                           ),

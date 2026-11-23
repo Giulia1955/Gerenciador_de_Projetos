@@ -1,3 +1,4 @@
+import 'package:apk_auth/models/project.dart';
 import 'package:apk_auth/theme/app_theme.dart';
 import 'package:apk_auth/view/dashboard_shell.dart';
 import 'package:apk_auth/providers/project_provider.dart';
@@ -29,7 +30,10 @@ void main() {
     );
     final wisdomProvider = WisdomProvider(
       repository: WisdomRepository(
-        fetchZen: () async => throw StateError('offline'),
+        fetchZen: () async => const WisdomQuote(
+          text: 'Uma frase de teste para a pílula.',
+          author: 'Teste',
+        ),
         fetchAdvice: () async => throw StateError('offline'),
       ),
     );
@@ -51,6 +55,23 @@ void main() {
     expect(find.text('Projetos'), findsWidgets);
     expect(find.text('Calendário'), findsWidgets);
     expect(find.text('Perfil'), findsWidgets);
+    await tester.pump();
+    expect(find.textContaining('Uma frase de teste para a pílula.'), findsOneWidget);
+
+    await projectProvider.createProject(
+      const Project(
+        id: 'project-1',
+        ownerId: '',
+        name: 'Atividade de Pensamento Computacional',
+      ),
+    );
+    await tester.pump();
+
+    expect(
+      find.text('Atividade de Pensamento Computacional'),
+      findsOneWidget,
+    );
+    expect(find.text('Nenhum projeto ainda'), findsNothing);
 
     await tester.tap(find.text('Calendário').last);
     await tester.pump();

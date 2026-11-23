@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
-        android:label="Auth App"
+        android:label="Auth App - Night Owlner"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

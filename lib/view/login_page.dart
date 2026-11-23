@@ -155,7 +155,7 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 // Animação Lottie
                 const MyLottie(
-                  animation: 'assets/animations/login.json',
+                  animation: 'assets/animation/Owl.json',
                   height: 200,
                   width: 200,
                 ),

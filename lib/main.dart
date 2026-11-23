@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,7 +9,6 @@ import 'providers/project_provider.dart';
 import 'providers/task_provider.dart';
 import 'providers/wisdom_provider.dart';
 import 'repositories/project_repository.dart';
-import 'repositories/storage_repository.dart';
 import 'repositories/task_repository.dart';
 import 'repositories/wisdom_repository.dart';
 import 'theme/app_theme.dart';
@@ -28,19 +26,13 @@ void main() async {
         Provider<ProjectRepository>(
           create: (_) => ProjectRepository(FirebaseFirestore.instance),
         ),
-        Provider<StorageRepository>(
-          create: (_) => StorageRepository(FirebaseStorage.instance),
-        ),
         ChangeNotifierProvider<ProjectProvider>(
           create: (context) => ProjectProvider(
             repository: context.read<ProjectRepository>(),
-            storageRepository: context.read<StorageRepository>(),
           ),
         ),
         ChangeNotifierProvider<MediaProvider>(
-          create: (context) => MediaProvider(
-            repository: context.read<StorageRepository>(),
-          ),
+          create: (context) => MediaProvider(),
         ),
         Provider<TaskRepository>(
           create: (_) => TaskRepository(FirebaseFirestore.instance),

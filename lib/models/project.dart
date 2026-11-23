@@ -24,7 +24,7 @@ class Project {
     required this.name,
     this.description,
     this.dueDate,
-    this.imageUrls = const [],
+    this.images = const [],
     this.location,
     this.updatedAt,
     this.createdAt,
@@ -35,16 +35,16 @@ class Project {
   final String name;
   final String? description;
   final DateTime? dueDate;
-  final List<String> imageUrls;
+  final List<Blob> images;
   final ProjectLocation? location;
   final DateTime? updatedAt;
   final DateTime? createdAt;
 
   factory Project.fromMap(Map<String, dynamic> map) {
-    final rawImageUrls = map['imageUrls'];
-    final imageUrls = rawImageUrls is Iterable
-        ? rawImageUrls.whereType<String>().toList(growable: false)
-        : <String>[];
+    final rawImages = map['images'];
+    final images = rawImages is Iterable
+        ? rawImages.whereType<Blob>().toList(growable: false)
+        : <Blob>[];
 
     final rawLocation = map['location'];
 
@@ -54,7 +54,7 @@ class Project {
       name: map['name'] as String? ?? '',
       description: map['description'] as String?,
       dueDate: _dateTimeFromValue(map['dueDate']),
-      imageUrls: imageUrls,
+      images: images,
       location: rawLocation is Map<String, dynamic>
           ? ProjectLocation.fromMap(rawLocation)
           : null,
@@ -69,7 +69,7 @@ class Project {
         'name': name,
         'description': description,
         'dueDate': _timestampFromDateTime(dueDate),
-        'imageUrls': imageUrls,
+        'images': images,
         'location': location?.toMap(),
         'updatedAt': _timestampFromDateTime(updatedAt),
         'createdAt': _timestampFromDateTime(createdAt),
@@ -81,7 +81,7 @@ class Project {
     String? name,
     String? description,
     DateTime? dueDate,
-    List<String>? imageUrls,
+    List<Blob>? images,
     ProjectLocation? location,
     DateTime? updatedAt,
     DateTime? createdAt,
@@ -92,7 +92,7 @@ class Project {
       name: name ?? this.name,
       description: description ?? this.description,
       dueDate: dueDate ?? this.dueDate,
-      imageUrls: imageUrls ?? this.imageUrls,
+      images: images ?? this.images,
       location: location ?? this.location,
       updatedAt: updatedAt ?? this.updatedAt,
       createdAt: createdAt ?? this.createdAt,
@@ -102,9 +102,9 @@ class Project {
   @override
   bool operator ==(Object other) {
     if (other is! Project) return false;
-    if (other.imageUrls.length != imageUrls.length) return false;
-    for (var i = 0; i < imageUrls.length; i++) {
-      if (other.imageUrls[i] != imageUrls[i]) return false;
+    if (other.images.length != images.length) return false;
+    for (var i = 0; i < images.length; i++) {
+      if (other.images[i] != images[i]) return false;
     }
 
     return other.id == id &&
@@ -119,5 +119,5 @@ class Project {
 
   @override
   int get hashCode => Object.hash(id, ownerId, name, description, dueDate,
-      Object.hashAll(imageUrls), location, updatedAt, createdAt);
+      Object.hashAll(images), location, updatedAt, createdAt);
 }

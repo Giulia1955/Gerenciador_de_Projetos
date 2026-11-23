@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:apk_auth/models/project.dart';
 import 'package:apk_auth/models/project_location.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -41,7 +43,6 @@ void main() {
         'name': 'Night Owl App',
         'description': 'Firebase project',
         'dueDate': Timestamp.fromDate(due),
-        'imageUrls': ['https://example.com/a.png', 'https://example.com/b.png'],
         'location': {
           'latitude': -23.5505,
           'longitude': -46.6333,
@@ -56,8 +57,6 @@ void main() {
       expect(project.name, 'Night Owl App');
       expect(project.description, 'Firebase project');
       expect(project.dueDate, due);
-      expect(project.imageUrls,
-          ['https://example.com/a.png', 'https://example.com/b.png']);
       expect(project.location?.label, 'São Paulo');
       expect(project.updatedAt, updated);
       expect(project.createdAt, created);
@@ -66,28 +65,51 @@ void main() {
       expect(mapped['dueDate'], isA<Timestamp>());
       expect(mapped['updatedAt'], isA<Timestamp>());
       expect(mapped['createdAt'], isA<Timestamp>());
-      expect(mapped['imageUrls'], project.imageUrls);
       expect(Project.fromMap(mapped), project);
     });
 
-    test('accepts DateTime, milliseconds and null values', () {
-      final due = DateTime.utc(2027, 1, 2);
+    test('fromMap and toMap round trip with nested location and image blobs',
+        () {
+      final due = DateTime.utc(2026, 12, 1, 9);
+      final updated = DateTime.utc(2026, 11, 20, 12);
+      final created = DateTime.utc(2026, 11, 1, 8);
+      final firstImage =
+          Blob(Uint8List.fromList([255, 216, 255, 217]));
+      final secondImage = Blob(Uint8List.fromList([0, 1, 2, 3]));
+      final project = Project.fromMap({
+        'id': 'project-1',
+        'ownerId': 'owner-1',
+        'name': 'Night Owl App',
+        'description': 'Firebase project',
+        'dueDate': Timestamp.fromDate(due),
+        'images': [firstImage, secondImage],
+        'location': {
+          'latitude': -23.5505,
+          'longitude': -46.6333,
+          'label': 'São Paulo'
+        },
+        'updatedAt': Timestamp.fromDate(updated),
+        'createdAt': Timestamp.fromDate(created),
+      });
+
+      expect(project.images, [firstImage, secondImage]);
+
+      final mapped = project.toMap();
+      expect(mapped['images'], [firstImage, secondImage]);
+      expect(mapped.containsKey('imageUrls'), isFalse);
+      expect(Project.fromMap(mapped), project);
+    });
+
+    test('ignores legacy imageUrls and returns an empty image list', () {
       final project = Project.fromMap({
         'id': 'project-2',
         'ownerId': 'owner-2',
         'name': 'Project',
-        'dueDate': due,
-        'imageUrls': null,
-        'location': null,
-        'updatedAt': due.millisecondsSinceEpoch,
-        'createdAt': null,
+        'imageUrls': ['https://example.com/old-image.jpg'],
       });
 
-      expect(project.dueDate, due);
-      expect(project.imageUrls, isEmpty);
-      expect(project.location, isNull);
-      expect(project.updatedAt, due);
-      expect(project.createdAt, isNull);
+      expect(project.images, isEmpty);
+      expect(project.toMap().containsKey('imageUrls'), isFalse);
     });
   });
 }
