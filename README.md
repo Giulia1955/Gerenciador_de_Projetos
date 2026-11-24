@@ -47,9 +47,9 @@ O NightOwlner tem como objetivo ajudar estudantes a organizar projetos acadêmic
 
 ## Imagens das principais telas
 
-![Tela de login](docs/screenshots/login.png)
-![Tela de projetos](docs/screenshots/projetos.png)
-![Tela do calendário](docs/screenshots/calendario.png)
+![Tela de login](assets/image/login.png)
+![Tela de projetos](assets/image/projetos.png)
+![Tela do calendário](assets/image/calendario.png)
 
 ## Instruções para executar
 
