@@ -47,27 +47,9 @@ O NightOwlner tem como objetivo ajudar estudantes a organizar projetos acadêmic
 
 ## Imagens das principais telas
 
-As imagens devem ser adicionadas na pasta `docs/screenshots/`. Para incluir um print:
-
-1. Crie a pasta `docs/screenshots/` na raiz do projeto, caso ela ainda não exista.
-2. Salve os arquivos nessa pasta com nomes simples, por exemplo `login.png`, `projetos.png` e `calendario.png`.
-3. Adicione as imagens ao README usando o caminho relativo:
-
-```md
 ![Tela de login](docs/screenshots/login.png)
 ![Tela de projetos](docs/screenshots/projetos.png)
 ![Tela do calendário](docs/screenshots/calendario.png)
-```
-
-Exemplo de organização:
-
-```text
-docs/
-└── screenshots/
-	├── login.png
-	├── projetos.png
-	└── calendario.png
-```
 
 ## Instruções para executar
 
